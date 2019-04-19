@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script type="text/javascript">
+    $.get("q").onclick(function () {
+        this.innerHTML="66666"
+    })
+
+    function my() {
+        $.get("q").innerHTML="66666"
+    }
+</script>
+<body>
+    <h1 id="q" onclick="my()">545454</h1>
+    <h1 id="t" onclick="this.innerHTML='asdfasdf'">545454</h1>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.mapper.CodeMapper" >
+  <resultMap id="BaseResultMap" type="com.demo.domain.Code" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="rannum" property="rannum" jdbcType="VARCHAR" />
+    <result column="nowdate" property="nowdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from code
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.demo.domain.Code" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="BEFORE" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into code ( phone, rannum,
+      nowdate)
+    values (#{phone,jdbcType=VARCHAR}, #{rannum,jdbcType=VARCHAR},
+      #{nowdate,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.demo.domain.Code" >
+    update code
+    set
+      rannum = #{rannum,jdbcType=VARCHAR},
+      nowdate = #{nowdate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, phone, rannum, nowdate
+    from code
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, phone, rannum, nowdate
+    from code
+  </select>
+    <select id="queryOne" resultMap="BaseResultMap" parameterType="string">
+        select * from code where phone=#{phone}
+    </select>
+    <select id="findCode" resultType="string" parameterType="string">
+        select rannum from code where phone=#{phone} and 120>(NOW()-nowdate)
+    </select>
+</mapper>

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.mapper.EventhandleMapper" >
+  <resultMap id="BaseResultMap" type="com.demo.domain.Eventhandle" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="Photopath" property="photopath" jdbcType="VARCHAR" />
+    <result column="Statues" property="statues" jdbcType="BIGINT" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="Donetime" property="donetime" jdbcType="TIMESTAMP" />
+    <result column="Address" property="address" jdbcType="VARCHAR" />
+    <result column="describe" property="mydescribe" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from eventhandle
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.demo.domain.Eventhandle" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="BEFORE" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into eventhandle ( eventnoticeID, Photopath,
+      employeeID, Status, CreateDate, 
+      Donetime, Address, describe
+      )
+    values ( #{eventnoticeid,jdbcType=BIGINT}, #{photopath,jdbcType=VARCHAR},
+      #{employeeid,jdbcType=BIGINT}, #{status,jdbcType=BIGINT}, #{createdate,jdbcType=TIMESTAMP}, 
+      #{donetime,jdbcType=TIMESTAMP}, #{address,jdbcType=VARCHAR}, #{describe,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.demo.domain.Eventhandle" >
+    update eventhandle
+    set eventnoticeID = #{eventnoticeid,jdbcType=BIGINT},
+      Photopath = #{photopath,jdbcType=VARCHAR},
+      employeeID = #{employeeid,jdbcType=BIGINT},
+      Statues = #{status,jdbcType=BIGINT},
+      CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      Donetime = #{donetime,jdbcType=TIMESTAMP},
+      Address = #{address,jdbcType=VARCHAR},
+      describe = #{describe,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, eventnoticeID, Photopath, employeeID, Status, CreateDate, Donetime, Address, 
+    describe
+    from eventhandle
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="eventhandlemap" >
+      SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe, ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+      FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.employeeID=em.id LEFT JOIN
+               managetype ma ON ma.id=en.ManagetypeID;
+  </select>
+    <!--Eventhandle queryAll(Long id); status == 2 -->
+    <select id="queryAll" resultMap="eventhandlemap" parameterType="java.lang.Long">
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.employeeID=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE em.id=#{id} and ev.statues=2 or ev.statues=(-1);
+    </select>
+    <select id="queryHistory" resultMap="eventhandlemap" parameterType="long">
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.employeeID=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE em.id=#{id} and ev.statues =2;
+    </select>
+    <select id="queryToday" resultMap="eventhandlemap" parameterType="long">
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.employeeID=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE em.id=#{id} and ev.statues =2 and DATEDIFF(CreateDate,NOW())=0;
+    </select>
+    <select id="queryPastDay" resultMap="eventhandlemap" >
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.employeeID=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE em.id=#{id} and ev.statues =2 and DATEDIFF(NOW(),CreateDate)=#{day};
+    </select>
+    <select id="queryPastMonth" resultMap="eventhandlemap">
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.employeeID=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE em.id=#{id} and ev.statues =2 and PERIOD_DIFF(date_format(NOW(),'%Y%m' ),date_format(CreateDate,'%Y%m')) =#{month}
+    </select>
+    <resultMap id="eventhandlemap" type="com.demo.domain.Eventhandle">
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="Photopath" property="photopath" jdbcType="VARCHAR" />
+        <result column="Statues" property="statues" jdbcType="BIGINT" />
+        <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+        <result column="Donetime" property="donetime" jdbcType="TIMESTAMP" />
+        <result column="Address" property="address" jdbcType="VARCHAR" />
+        <result column="mydescribe" property="mydescribe" jdbcType="LONGVARCHAR" />
+        <result column="subdescribe" property="subdescribe" jdbcType="LONGVARCHAR" />
+        <result column="photopath" property="photopath" jdbcType="LONGVARCHAR" />
+        <result column="subphotopath" property="subphotopath" jdbcType="LONGVARCHAR" />
+        <result column="reject" property="reject" jdbcType="VARCHAR" />
+        <association property="eventnotice" javaType="com.demo.domain.Eventnotice">
+            <id column="eid" property="id"></id>
+            <result column="ename" property="eventname"/>
+        </association>
+        <association property="employee" javaType="com.demo.domain.Employee">
+            <id column="emid" property="id"></id>
+            <result column="emname" property="username"/>
+        </association>
+        <association property="managetype" javaType="com.demo.domain.Managetype">
+            <id column="maid" property="id"></id>
+            <result column="maname" property="typename"/>
+        </association>
+    </resultMap>
+    <!--查询需要执行的任务-->
+    <select id="queryNow" resultMap="eventhandlemap" parameterType="java.lang.Long">
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.employeeID=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE em.id=#{id} and ev.statues = 0 or ev.statues= (-1);
+    </select>
+    <!--查询正在执行的任务-->
+    <select id="eventNow" resultMap="eventhandlemap" parameterType="java.lang.Long">
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.employeeID=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE em.id=#{id} and ev.statues = 0 ORDER BY (NOW()-ev.CreateDate) LIMIT 1;
+    </select>
+    <!--任务提交void submit(Long id);-->
+    <update id="submit" parameterType="java.lang.Long">
+        update eventhandle
+        set Statues = 1
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="newsubmit" >
+        update eventhandle
+        set Statues = 1,subdescribe=#{subdescrib},subphotopath=#{subphotopath}
+        where id = #{id}
+    </update>
+    <!--审核通过-->
+    <update id="pass" parameterType="long">
+        update eventhandle
+        set Statues = 2
+        where id = #{id}
+    </update>
+    <update id="reject">
+        update eventhandle
+        set Statues = -1,reject= #{reject}
+        where id = #{id}
+    </update>
+    <select id="findWait" resultMap="eventhandlemap" parameterType="long">
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE  ev.statues = 1 and ev.mainId=#{id};
+    </select>
+    <select id="findPass" resultMap="eventhandlemap" parameterType="long">
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE  ev.statues = 2 and ev.mainId=#{id};
+    </select>
+    <select id="findReject" resultMap="eventhandlemap" parameterType="long">
+        SELECT ev.id,ev.mainId,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE  ev.statues = (-1) and ev.mainId=#{id};
+    </select>
+    <select id="listAll" resultMap="eventhandlemap">
+        SELECT ev.id,ev.mainId,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE  ev.statues = 3;
+    </select>
+    <select id="listNow" resultMap="eventhandlemap">
+        SELECT ev.id,ev.mainId, en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE  ev.statues = 0;
+    </select>
+    <select id="listWait" resultMap="eventhandlemap">
+        SELECT ev.id,ev.mainId, en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE  ev.statues = 1;
+    </select>
+    <!--获取所有事件对应类型总数的接口-->
+    <select id="queryType" resultType="Map" >
+        SELECT SUM(ma.id=1) as '城市管理',SUM(ma.id=2) as '交通管理',SUM(ma.id=3) as '司法公安',COUNT(ma.id) as '事件总数'
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID;
+    </select>
+    <select id="typeNew" resultType="Map" parameterType="long">
+        SELECT SUM(ma.id=1) as '城市管理',SUM(ma.id=2) as '交通管理',SUM(ma.id=3) as '司法公安',COUNT(ma.id) as '事件总数'
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID where ev.Statues=3 and ev.mainId=#{id};
+    </select>
+    <select id="typeNow" resultType="Map" parameterType="long">
+        SELECT SUM(ma.id=1) as '城市管理',SUM(ma.id=2) as '交通管理',SUM(ma.id=3) as '司法公安',COUNT(ma.id) as '事件总数'
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID where ev.Statues=0 and ev.mainId=#{id};
+    </select>
+    <select id="typeWait" resultType="Map" parameterType="long">
+        SELECT SUM(ma.id=1) as '城市管理',SUM(ma.id=2) as '交通管理',SUM(ma.id=3) as '司法公安',COUNT(ma.id) as '事件总数'
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID where ev.Statues=1 and ev.mainId=#{id};
+    </select>
+    <!--发布任务提交的接口-->
+    <insert id="issue" parameterType="com.demo.domain.Eventhandle">
+        insert into eventhandle ( eventnoticeID, photopath,
+                                  mainId, Statues, CreateDate,
+                                  Donetime, Address, mydescribe )
+        values ( #{eventnoticeid,jdbcType=BIGINT}, #{photopath,jdbcType=VARCHAR},
+                 #{mainid,jdbcType=BIGINT},3, #{createdate,jdbcType=TIMESTAMP},
+                 #{donetime,jdbcType=TIMESTAMP}, #{address,jdbcType=VARCHAR}, #{mydescribe,jdbcType=LONGVARCHAR}
+               )
+    </insert>
+    <select id="eventAllIssue" resultMap="eventhandlemap">
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE  ev.statues = 0 or ev.statues = 3;
+    </select>
+    <select id="eventAllDonne" resultMap="eventhandlemap">
+        SELECT ev.id,en.eventName ename,en.id eid,em.id emid,em.username emname,ma.id maid,ma.typename maname,ev.`mydescribe`,ev.Photopath,ev.subphotopath,ev.subdescribe,ev.`Statues`,ev.CreateDate,ev.Donetime,ev.Address
+        FROM eventhandle as ev LEFT JOIN eventnotice en ON ev.eventnoticeID = en.id LEFT JOIN employee em ON ev.mainId=em.id LEFT JOIN
+                 managetype ma ON ma.id=en.ManagetypeID WHERE  ev.statues = 2;
+    </select>
+</mapper>
